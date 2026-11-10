@@ -1,15 +1,14 @@
-# Nano Banana 中转 API：国内直连谷歌图像模型，Nano Banana Pro 与 2 一起用
+# Nano Banana 中转 API：国内直连谷歌图像模型，`gemini-nano-banana-2.1` 怎么调
 
-Nano Banana 是 Google 那一套图像模型的民间叫法，从早期的快速出图到现在支持局部编辑、多图参考、2K 细节，一直是设计师换图最快的一档。真正用起来的问题还是网络：Gemini 的图像端点在国内直连不通。
+Nano Banana 是 Google 那一套图像模型的民间叫法，从早期快速出图到现在支持局部编辑、多图参考，一直是设计师改图最快的一档。真正用起来的问题还是网络：Gemini 的图像端点在国内直连不通。
 
-Token173（https://token173.net）提供国内入口，协议兼容 OpenAI 图像格式，一个 Key 能同时调 Nano Banana 系列和 `gpt-image-2.6-flare`、`gpt-image-2.6-sunburst`，方便对比两边出图风格。
+Token173（https://token173.net）提供国内入口，协议兼容 OpenAI 图像格式，一个 Key 能同时调 `gemini-nano-banana-2.1` 和 `gpt-image-2.6-flare`、`gpt-image-2.6-sunburst`，方便对比两边出图风格。
 
 ## 可用模型
 
 | 模型 ID | 说明 |
 |---|---|
-| `nano-banana-pro` | 细节和多图参考能力强，商业素材常用 |
-| `nano-banana-2` | 新一代，速度和一致性更好 |
+| `gemini-nano-banana-2.1` | 谷歌图像 2.1，细节和多图参考能力强，商业素材常用 |
 | `gemini-3.8-flash` | 文本模型，配合生成 prompt 或看图描述 |
 
 ## 文生图
@@ -19,7 +18,7 @@ curl https://token173.net/v1/images/generations \
   -H "Authorization: Bearer sk-你的令牌" \
   -H "Content-Type: application/json" \
   -d '{
-    "model": "nano-banana-pro",
+    "model": "gemini-nano-banana-2.1",
     "prompt": "极简风格的产品海报底图，米白背景，阴影柔和，右侧留白",
     "size": "1024x1536"
   }'
@@ -32,7 +31,7 @@ import base64
 client = OpenAI(api_key="sk-你的令牌", base_url="https://token173.net/v1")
 
 r = client.images.generate(
-    model="nano-banana-2",
+    model="gemini-nano-banana-2.1",
     prompt="极简风格的产品海报底图，米白背景，阴影柔和，右侧留白",
     size="1024x1536",
 )
@@ -43,22 +42,22 @@ open("poster.png", "wb").write(base64.b64decode(r.data[0].b64_json))
 
 ```python
 r = client.images.edit(
-    model="nano-banana-pro",
+    model="gemini-nano-banana-2.1",
     image=open("poster.png", "rb"),
     prompt="把背景换成雾蓝色，产品保持原样",
 )
 ```
 
-Nano Banana 系列在"只改指定区域、其他不动"这件事上比较听话，做详情页改图比重新生成省事。
+这个系列在"只改指定区域、其他不动"这件事上比较听话，做详情页改图比重新生成省事。改图时要给清楚"哪里不动"——只写"改背景"，模型容易顺手把主体的光影一起改了。
 
-## 两个模型怎么分工
+## 什么任务用它
 
-| 任务 | 选哪个 |
+| 任务 | 建议 |
 |---|---|
-| 电商主图、产品精修 | `nano-banana-pro`，细节稳 |
-| 社媒配图、批量海报 | `nano-banana-2`，速度快、成本低 |
-| 需要多张参考图保持风格 | `nano-banana-pro` |
-| 出图后要配文案 | 同一个 Key 调 `gemini-3.8-flash` 或 `gpt-6.1-sol` |
+| 电商主图、产品精修 | 用它，细节稳，改图听话 |
+| 需要多张参考图保持风格 | 用它，多图参考是这代的主打 |
+| 社媒配图、批量海报 | 也用它，比 2.6 便宜；追求排版精度再换 `gpt-image-2.6-flare` |
+| 出图后要配文案 | 同一个 Key 调 `gemini-3.8-flash` 或 `gpt-6-astra` |
 
 ## 提示词写法
 
@@ -87,7 +86,7 @@ Nano Banana 系列在"只改指定区域、其他不动"这件事上比较听话
 模型输出可以用，具体授权条款按你所在平台的规定走，品牌 logo、真人肖像这类素材自己把关。
 
 **Q：一次能传几张参考图？**
-支持多图参考，具体张数看模型版本，一般 2 到 4 张够用。
+支持多图参考，一般 2 到 4 张够用，具体张数看模型版本。
 
 ## 相关
 
